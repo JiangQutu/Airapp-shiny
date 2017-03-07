@@ -1,0 +1,3 @@
+load("/Users/tutu/Desktop/Myapp/china_air/air_app/data/air.rds")
+test <- load("/Users/tutu/Desktop/Myapp/china_air/air_app/data/air.rds")
+head(test)
