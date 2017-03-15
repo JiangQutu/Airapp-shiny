@@ -43,36 +43,36 @@ citydata <- airdata[complete.cases(value),] %>%
   as.data.table()
 citydata$date <- as.Date(citydata$date)
 ## polygon data
-polydata <- airdata[complete.cases(value),] %>%
-  select(month=month,type=type,region=city,value=value) %>% 
-  group_by(month,type,region) %>% 
-  summarise(value=mean(value)) %>%
-  as.data.table()
-choropleth <- as.data.table(merge(city, polydata, by = 'region',all.x=TRUE))
-choropleth <- choropleth[complete.cases(month),] %>% 
-  subset(type=='AQI') %>% 
-  arrange(order)
-choropleth$month_CN <- factor(choropleth$month, labels = c('一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'))
-polytheme <- function(){
-  theme(text = element_text(family = 'STHeiti',color='white'),
-        axis.text = element_blank(),
-        axis.title = element_blank(),
-        plot.title = element_text(hjust = 0.5),
-        plot.background = element_rect(fill="#0e0e0e"),
-        panel.background = element_rect(fill="#0e0e0e"),
-        panel.border = element_rect(fill=NA, color="#0e0e0e", size=0.5, linetype="solid"),
-        panel.grid = element_blank(),
-        axis.line = element_blank(),
-        axis.ticks = element_blank(),
-        legend.background = element_rect(fill="#0e0e0e"),
-        legend.position = 'bottom',
-        legend.key.width = unit(2.5,'cm'), # 图例长宽
-        legend.key.height = unit(0.3,'cm'),
-        legend.title.align = 0.5,
-        strip.background = element_blank(),
-        strip.placement = 'outside',
-        strip.text = element_text(color = 'white'))
-}
+# polydata <- airdata[complete.cases(value),] %>%
+#   select(month=month,type=type,region=city,value=value) %>% 
+#   group_by(month,type,region) %>% 
+#   summarise(value=mean(value)) %>%
+#   as.data.table()
+# choropleth <- as.data.table(merge(city, polydata, by = 'region',all.x=TRUE))
+# choropleth <- choropleth[complete.cases(month),] %>% 
+#   subset(type=='AQI') %>% 
+#   arrange(order)
+# choropleth$month_CN <- factor(choropleth$month, labels = c('一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'))
+# polytheme <- function(){
+#   theme(text = element_text(family = 'STHeiti',color='white'),
+#         axis.text = element_blank(),
+#         axis.title = element_blank(),
+#         plot.title = element_text(hjust = 0.5),
+#         plot.background = element_rect(fill="#0e0e0e"),
+#         panel.background = element_rect(fill="#0e0e0e"),
+#         panel.border = element_rect(fill=NA, color="#0e0e0e", size=0.5, linetype="solid"),
+#         panel.grid = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.background = element_rect(fill="#0e0e0e"),
+#         legend.position = 'bottom',
+#         legend.key.width = unit(2.5,'cm'), # 图例长宽
+#         legend.key.height = unit(0.3,'cm'),
+#         legend.title.align = 0.5,
+#         strip.background = element_blank(),
+#         strip.placement = 'outside',
+#         strip.text = element_text(color = 'white'))
+# }
 
 #### ggplot_mytheme ####
 mytheme <- function(...,background='#0e0e0e'){

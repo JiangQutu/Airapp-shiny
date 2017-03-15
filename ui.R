@@ -58,13 +58,13 @@ shinyUI(
                           plotlyOutput("ggscatter_plot", width = "100%", height="50%"),
                           plotOutput("gghot_plot", width = "100%", height="50%")
                       )
-             ),
-             tabPanel('空间尺度',
-                      div(class="outer",
-                          tags$style(type = "text/css", ".outer {position: fixed; top: 50px; left: 0;right: 0; bottom: 0; overflow: hidden; padding: 0}"),
-                          plotOutput("ggploygon_plot", width = "100%", height="100%")
-                      )
              )
+             # tabPanel('空间尺度',
+             #          div(class="outer",
+             #              tags$style(type = "text/css", ".outer {position: fixed; top: 50px; left: 0;right: 0; bottom: 0; overflow: hidden; padding: 0}"),
+             #              plotOutput("ggploygon_plot", width = "100%", height="100%")
+             #          )
+             # )
              
   )
 )
