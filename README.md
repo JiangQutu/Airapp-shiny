@@ -1,6 +1,6 @@
 # Airapp-shiny
 基于R语言的2015年中国空气质量可视化APP
-[可视化网站访问]国内有时很慢，貌似服务器的问题。。。
+[可视化网站访问]挂在shinyapp.io,国内有时很慢，和服务器在国外有一定关系。。。
 # R语言包
 主要用到的包有shiny,leaflet,ggplot2,data.table,dplyr,tidyr,Rcolorbrewer等
 # 数据来源
@@ -9,10 +9,10 @@
 # 网站截图
 站点数据可视化，可选每日AQI,PM.5,NO2,SO2等
 ## PM2.5
-![img](http://om88hgdgg.bkt.clouddn.com/image/gitgit_pm.png)
+![img1](http://om88hgdgg.bkt.clouddn.com/image/gitgit_pm.png)
 ## AQI
-![img](http://om88hgdgg.bkt.clouddn.com/image/gitgit_aqi.png)
+![img2](http://om88hgdgg.bkt.clouddn.com/image/gitgit_aqi.png)
 ## 时间尺度分析
-![img](http://om88hgdgg.bkt.clouddn.com/image/gitgit_point.png)
+![img3](http://om88hgdgg.bkt.clouddn.com/image/gitgit_point.png)
 ## AQI城市月度空间可视化
-![img](http://om88hgdgg.bkt.clouddn.com/image/gitgit_spatial.png)
+![img4](http://om88hgdgg.bkt.clouddn.com/image/gitgit_spatial.png)
