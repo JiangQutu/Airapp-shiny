@@ -14,7 +14,7 @@ library(viridis)
 library(plotly)
 
 shinyUI(
-  navbarPage("2015空气质量数据可视化",
+  navbarPage("2015空气质量数据可视化--by 江曲图",
              theme = shinytheme('cyborg'),
              fluid = TRUE,
              #### 站点 ####
@@ -46,8 +46,8 @@ shinyUI(
                                                     selectize = FALSE),
                                         # 前10污染站点绘图output
                                         h5(style="font-family:'STHeiti';font-size:11pt;color:#999",
-                                           "高值站点"),
-                                        plotlyOutput("top",height = '400px')
+                                           "高值站点(指标悬浮查看具体信息)"),
+                                        plotlyOutput("top",height = '460px')
                           )
                       ) 
               ),
@@ -58,13 +58,13 @@ shinyUI(
                           plotlyOutput("ggscatter_plot", width = "100%", height="50%"),
                           plotOutput("gghot_plot", width = "100%", height="50%")
                       )
+             ),
+             tabPanel('空间尺度',
+                      div(class="outer",
+                          tags$style(type = "text/css", ".outer {position: fixed; top: 50px; left: 0;right: 0; bottom: 0; overflow: hidden; padding: 0}"),
+                          plotOutput("ggploygon_plot", width = "100%", height="100%")
+                      )
              )
-             # tabPanel('空间尺度',
-             #          div(class="outer",
-             #              tags$style(type = "text/css", ".outer {position: fixed; top: 50px; left: 0;right: 0; bottom: 0; overflow: hidden; padding: 0}"),
-             #              plotOutput("ggploygon_plot", width = "100%", height="100%")
-             #          )
-             # )
              
   )
 )

@@ -1,0 +1,11 @@
+name: Airapp-shiny
+title: Airapp-shiny
+account: jiangqutu
+server: shinyapps.io
+appId: 163891
+bundleId: 747451
+url: https://jiangqutu.shinyapps.io/Airapp-shiny/
+when: 1489544915.75778
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: README.md

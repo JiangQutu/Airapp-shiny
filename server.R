@@ -11,68 +11,21 @@ library(stringi)
 library(ggplot2)
 library(viridis)
 library(plotly)
-library(leafletCN)
+#library(leafletCN)
 airdata <- fread('data/airdata_wide.csv')
-geo <- fread('data/geo_clean.csv')
+geo <- fread('data/geo_new.csv')
 city <- read.csv('data/citygeo.csv')
 province <- fread('data/provincegeo.csv')
 #### 第一页站点数据与经纬度清洗合并 ####
 #geo$province <- gsub('省|市|壮族自治区|回族自治区|维吾尔自治区|自治区','',geo$province)
-#geo$city <- gsub('市', '', geo$city)
 # geo[geo=='广西壮族自治区'] <- '广西'
 airdata <- airdata %>% gather(station_code,value, 4:1500)
 airdata <- as.data.table(left_join(airdata,geo,by='station_code')) 
 airdata <- airdata[complete.cases(lon),]
 # 初始leaflet图
 china <- leaflet() %>% 
-  fitBounds(86.33,24.51,145.05,42.33)
-  #setView(lng=117.38,lat=36.9,zoom=4) 
-#### 第二页gghot_plot data ####
-## hot data
-hotdata <- airdata[complete.cases(value),] %>% 
-  group_by(province,month,type) %>% 
-  summarise(value=mean(value)) %>% 
-  arrange(month,value) %>% 
-  as.data.table()
-## scatter data
-citydata <- airdata[complete.cases(value),] %>%
-  select(date=date,type=type,city=city,value=value) %>% 
-  subset(city %in% c('北京','石家庄','海口','舟山','成都','武汉','上海','杭州','广州')) %>% 
-  group_by(date,type,city) %>% 
-  summarise(value=mean(value)) %>%
-  as.data.table()
-citydata$date <- as.Date(citydata$date)
-## polygon data
-# polydata <- airdata[complete.cases(value),] %>%
-#   select(month=month,type=type,region=city,value=value) %>% 
-#   group_by(month,type,region) %>% 
-#   summarise(value=mean(value)) %>%
-#   as.data.table()
-# choropleth <- as.data.table(merge(city, polydata, by = 'region',all.x=TRUE))
-# choropleth <- choropleth[complete.cases(month),] %>% 
-#   subset(type=='AQI') %>% 
-#   arrange(order)
-# choropleth$month_CN <- factor(choropleth$month, labels = c('一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'))
-# polytheme <- function(){
-#   theme(text = element_text(family = 'STHeiti',color='white'),
-#         axis.text = element_blank(),
-#         axis.title = element_blank(),
-#         plot.title = element_text(hjust = 0.5),
-#         plot.background = element_rect(fill="#0e0e0e"),
-#         panel.background = element_rect(fill="#0e0e0e"),
-#         panel.border = element_rect(fill=NA, color="#0e0e0e", size=0.5, linetype="solid"),
-#         panel.grid = element_blank(),
-#         axis.line = element_blank(),
-#         axis.ticks = element_blank(),
-#         legend.background = element_rect(fill="#0e0e0e"),
-#         legend.position = 'bottom',
-#         legend.key.width = unit(2.5,'cm'), # 图例长宽
-#         legend.key.height = unit(0.3,'cm'),
-#         legend.title.align = 0.5,
-#         strip.background = element_blank(),
-#         strip.placement = 'outside',
-#         strip.text = element_text(color = 'white'))
-# }
+  setView(lng=117.38,lat=36.9,zoom=4) %>% 
+  addProviderTiles("CartoDB.DarkMatter") 
 
 #### ggplot_mytheme ####
 mytheme <- function(...,background='#0e0e0e'){
@@ -110,7 +63,7 @@ shinyServer(function(input, output, session) {
   # 输出选择地图
   output$map <- renderLeaflet({
     china %>%
-      addProviderTiles("CartoDB.DarkMatter") %>%
+      #addProviderTiles("CartoDB.DarkMatter") %>%
       clearMarkerClusters() %>%
       clearMarkers()
   })
@@ -189,7 +142,7 @@ shinyServer(function(input, output, session) {
   top <- reactive({
     filteredData() %>% 
       arrange(desc(value)) %>%
-      head(22) %>%
+      head(30) %>%
       as.data.frame()
   })
   # top_plot
@@ -209,10 +162,16 @@ shinyServer(function(input, output, session) {
                           title=''),
              plot_bgcolor='rgba(1,1,1,0)',
              paper_bgcolor='rgba(1,1,1,0)',
-             margin = list(l = 42, r = 0, t = 48, b = 40))
+             margin = list(l = 47, r = 0, t = 48, b = 0))
   })
   #### gghot_plot ####
   output$gghot_plot <- renderPlot({
+    # hotdata
+    hotdata <- airdata[complete.cases(value),] %>% 
+      group_by(province,month,type) %>% 
+      summarise(value=mean(value)) %>% 
+      arrange(month,value) %>% 
+      as.data.table()
     ggplot(hotdata[hotdata$type=='AQI',], aes(province, month, fill = value)) + 
       geom_tile(colour="white", size=0.1, stat="identity") + 
       scale_fill_viridis(option="D",name='legend') +
@@ -223,6 +182,14 @@ shinyServer(function(input, output, session) {
   })
   #### ggscatter_plot ####
   output$ggscatter_plot <- renderPlotly({
+    # city_scatterdata
+    citydata <- airdata[complete.cases(value),] %>%
+      select(date=date,type=type,city=city,value=value) %>% 
+      subset(city %in% c('北京','石家庄','海口','舟山','成都','武汉','上海','杭州','广州')) %>% 
+      group_by(date,type,city) %>% 
+      summarise(value=mean(value)) %>%
+      as.data.table()
+    citydata$date <- as.Date(citydata$date)
     p <- ggplot(citydata[type=='AQI'],aes(date,value,colour=value)) + 
       geom_point(alpha=0.7)+
       scale_x_date(date_breaks = "4 month",
@@ -242,15 +209,46 @@ shinyServer(function(input, output, session) {
   })
   #### ggploygon_plot ####
   output$ggploygon_plot <- renderPlot({
+    # aqi_ploygondata
+    aqidata <- airdata[type=='AQI']
+    polydata <- aqidata[complete.cases(value),] %>%
+      select(month=month,region=city,value=value) %>% 
+      group_by(month,region) %>% 
+      summarise(value=mean(value)) %>%
+      as.data.table()
+    choropleth <- as.data.table(merge(city, polydata, by = 'region',all.x=TRUE))
+    choropleth <- choropleth[complete.cases(value),] %>% arrange(order)
+    choropleth$cut <- cut(choropleth$value,breaks = c(0,50,100,150,200,300,500))
+    monthlabel <- c('1' = '一月','2'='二月','3'='三月','4'='四月','5' = '五月','6'='六月',
+                   '7'='七月','8'='八月','9' = '九月','10' = '十月','11'='十一月','12'='十二月')
+    polytheme <- function(){
+      theme(text = element_text(family = 'STHeiti',color='white'),
+            axis.text = element_blank(),
+            axis.title = element_blank(),
+            plot.title = element_text(hjust = 0.5),
+            plot.background = element_rect(fill="#0e0e0e"),
+            panel.background = element_rect(fill="#0e0e0e"),
+            panel.border = element_rect(fill=NA, color="#0e0e0e", size=0.5, linetype="solid"),
+            panel.grid = element_blank(),
+            axis.line = element_blank(),
+            axis.ticks = element_blank(),
+            legend.background = element_rect(fill="#0e0e0e"),
+            legend.position = 'bottom',
+            legend.key.width = unit(2.5,'cm'), # 图例长宽
+            legend.key.height = unit(0.3,'cm'),
+            legend.title.align = 0.5,
+            strip.background = element_blank(),
+            strip.placement = 'outside',
+            strip.text = element_text(color = 'white'))
+    }
     ggplot(choropleth)+
-      geom_polygon(aes(long,lat,group=group,fill=value),
+      geom_polygon(aes(long,lat,group=group,fill=cut),
                    colour = alpha("gray",1/2),size=0.1)+
       geom_polygon(data = province, aes(long,lat,group=group),
                    colour = alpha('gray90',1/2), size=0.2,
                    fill = NA)+
-      #coord_map()+ # 墨卡托投影
       polytheme()+
-      facet_wrap(~month_CN)+
-      scale_fill_distiller(palette = "Spectral",name='城市AQI')
+      facet_wrap(~month, labeller = labeller(month=monthlabel))+
+      scale_fill_manual(values = c('#02e300','#ffff00','#ff7e00','#fe0000','#98004b','#7e0123'),'AQI')
   })
 })
