@@ -1,6 +1,6 @@
 # Airapp-shiny
 基于R语言的2015年中国空气质量可视化APP
-[可视化网站访问]挂在shinyapp.io,国内有时很慢，和服务器在国外有一定关系。。。
+[可视化网站访问](https://jiangqutu.shinyapps.io/china_air2015/)挂在shinyapp.io,国内有时很慢。。。
 # R语言包
 主要用到的包有shiny,leaflet,ggplot2,data.table,dplyr,tidyr,Rcolorbrewer等
 # 数据来源
